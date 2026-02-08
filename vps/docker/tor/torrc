@@ -1,0 +1,78 @@
+# Tor Configuration for VPS Proxy Router
+# Provides SOCKS proxy with VPN -> Tor chain
+
+# ==============================================================================
+# SOCKS Proxy
+# ==============================================================================
+# Listen on all interfaces within Docker network
+SocksPort 0.0.0.0:9050
+
+# Allow connections from Docker network
+SocksPolicy accept 172.16.0.0/12
+SocksPolicy accept 10.0.0.0/8
+SocksPolicy reject *
+
+# ==============================================================================
+# Control Port (for programmatic circuit management)
+# ==============================================================================
+ControlPort 9051
+
+# Hashed password for control port (default: "password")
+# Generate new one with: tor --hash-password yourpassword
+# For production, change this!
+HashedControlPassword 16:872860B76453A77D60CA2BB8C1A7042072093276A3D701AD684053EC4C
+
+# Allow control connections from Docker network
+ControlListenAddress 0.0.0.0
+
+# ==============================================================================
+# Circuit Settings
+# ==============================================================================
+# Maximum time to use a circuit for new streams (seconds)
+MaxCircuitDirtiness 3600
+
+# Build a new circuit every hour
+NewCircuitPeriod 3600
+
+# Number of entry guards to use
+NumEntryGuards 3
+
+# Use only stable relays
+EnforceDistinctSubnets 1
+
+# ==============================================================================
+# DNS
+# ==============================================================================
+# Resolve DNS through Tor
+DNSPort 5353
+
+# ==============================================================================
+# Logging
+# ==============================================================================
+Log notice stdout
+
+# ==============================================================================
+# Data Directory
+# ==============================================================================
+DataDirectory /var/lib/tor
+
+# ==============================================================================
+# Hidden Services (disabled by default)
+# Uncomment to expose services as .onion
+# ==============================================================================
+# HiddenServiceDir /var/lib/tor/hidden_service/
+# HiddenServicePort 80 127.0.0.1:80
+
+# ==============================================================================
+# Performance
+# ==============================================================================
+# Avoid slow circuits
+AvoidDiskWrites 1
+
+# Connection padding (helps with traffic analysis resistance)
+ConnectionPadding auto
+
+# ==============================================================================
+# Exit Policy (this is a client, not an exit)
+# ==============================================================================
+ExitPolicy reject *:*
